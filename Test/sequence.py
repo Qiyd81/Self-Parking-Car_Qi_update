@@ -9,16 +9,16 @@ import re
 from math import *
 from Bluetin_Echo import Echo
 
-TRIGGER_PIN_1 = 5
-ECHO_PIN_1 = 6
-TRIGGER_PIN_2 = 20
-ECHO_PIN_2 = 21
-TRIGGER_PIN_3 = 23
-ECHO_PIN_3 = 24
+TRIGGER_PIN_1 = 17
+ECHO_PIN_1 = 27
+TRIGGER_PIN_2 = 23
+ECHO_PIN_2 = 24
+TRIGGER_PIN_3 = 5
+ECHO_PIN_3 = 6
 TRIGGER_PIN_4 = 26
-ECHO_PIN_4 = 25
-TRIGGER_PIN_5 = 22
-ECHO_PIN_5 = 27
+ECHO_PIN_4 = 16
+TRIGGER_PIN_5 = 20
+ECHO_PIN_5 = 21
 
 echo = [Echo(TRIGGER_PIN_1, ECHO_PIN_1)
         , Echo(TRIGGER_PIN_2, ECHO_PIN_2)
@@ -34,10 +34,10 @@ for sensor in range(0, len(echo)):
 
 pi_hw = pigpio.pi()
 pi_hw.set_mode(13, pigpio.OUTPUT)
-pi_hw.set_mode(18, pigpio.OUTPUT)
+pi_hw.set_mode(12, pigpio.OUTPUT)
 
 LEFT_MOTOR_PIN =13
-RIGHT_MOTOR_PIN =18
+RIGHT_MOTOR_PIN =12
 
 path = "mouse_FIFO"
 coord = [0, 0]
@@ -64,8 +64,8 @@ def getY():
 primary_t_on = 1.5/1000
 primary_t_off = 20.0/1000
 primary_period = primary_t_on + primary_t_off
-primary_freq = 1/primary_period
-primary_duty = 1000000*(primary_t_on/primary_period)
+primary_freq = int(1/primary_period)
+primary_duty = int(1000000*(primary_t_on/primary_period))
 pi_hw.hardware_PWM(LEFT_MOTOR_PIN,primary_freq,primary_duty)
 
 
@@ -73,8 +73,8 @@ pi_hw.hardware_PWM(LEFT_MOTOR_PIN,primary_freq,primary_duty)
 secondary_t_on = 1.5/1000
 secondary_t_off = 20.0/1000
 secondary_period = secondary_t_on + secondary_t_off
-secondary_freq = 1/secondary_period
-secondary_duty = 1000000*(secondary_t_on/secondary_period)
+secondary_freq = int(1/secondary_period)
+secondary_duty = int(1000000*(secondary_t_on/secondary_period))
 pi_hw.hardware_PWM(RIGHT_MOTOR_PIN,secondary_freq,secondary_duty)
  
 # Fprimary wheel counter clockwise motion feedback function
@@ -88,8 +88,8 @@ def primary_motor_signals(v):
     print("primary_t_on:" + str(primary_t_on))
     primary_t_off = 20.0/1000
     primary_period =primary_t_on + primary_t_off
-    primary_freq = 1/primary_period
-    primary_duty = 1000000*(primary_t_on/primary_period)
+    primary_freq = int(1/primary_period)
+    primary_duty = int(1000000*(primary_t_on/primary_period))
     pi_hw.hardware_PWM(LEFT_MOTOR_PIN,primary_freq,primary_duty)
     
     
@@ -104,8 +104,8 @@ def secondary_motor_signals(v):
     print("secondary_t_on" + str(secondary_t_on))
     secondary_t_off = 20.0/1000
     secondary_period = secondary_t_on + secondary_t_off
-    secondary_freq = 1/secondary_period
-    secondary_duty = 1000000*(secondary_t_on/secondary_period)
+    secondary_freq = int(1/secondary_period)
+    secondary_duty = int(1000000*(secondary_t_on/secondary_period))
     pi_hw.hardware_PWM(RIGHT_MOTOR_PIN,secondary_freq,secondary_duty)
 
 def mov_fwd():
@@ -201,7 +201,7 @@ try:
     stop()
     pi_hw.stop()
         #x_start=getX()
-    print "###############################################################3"
+    print("###############################################################3")
 except:
     stop()
     pi_hw.stop()

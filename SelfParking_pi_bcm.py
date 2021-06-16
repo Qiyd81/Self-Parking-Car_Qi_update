@@ -27,29 +27,29 @@ from Bluetin_Echo import Echo
 import subprocess
 import signal
 
-# os.putenv('SDL_VIDEODRIVER', 'fbcon') # Display on piTFT
-# os.putenv('SDL_FBDEV', '/dev/fb1')
-# GPIO.setmode(GPIO.BCM) # Setup the mode to match the mode on Broadcom pin labels
-# pygame.init()
-# pygame.mouse.set_visible(False) #disable mouse pointer
-# GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP) # Set GPIO17  as input for Park button
-# 
-# ################################################Pygame Init###########################################
-# black = 0,0,0
-# white = 255,255,255
-# size = width, height = 320, 240
-# screen = pygame.display.set_mode((320,240)) #set screen size to PiTFT resolution
-# my_font = pygame.font.Font(None, 20)
-# screen.fill(black) # Erase the Work space
-# start_surface = my_font.render("Initializing...", True, white) #splash screen
-# rect_start = start_surface.get_rect(center=(160,120))
-# screen.blit(start_surface, rect_start)
-# pygame.display.flip()  #Display the initial screen
+#os.putenv('SDL_VIDEODRIVER', 'fbcon') # Display on piTFT
+#os.putenv('SDL_FBDEV', '/dev/fb1')
+GPIO.setmode(GPIO.BCM) # Setup the mode to match the mode on Broadcom pin labels
+pygame.init()
+pygame.mouse.set_visible(False) #disable mouse pointer
+GPIO.setup(25, GPIO.IN, pull_up_down=GPIO.PUD_UP) # Set GPIO17  as input for Park button
+
+################################################Pygame Init###########################################
+#black = 0,0,0
+#white = 255,255,255
+#size = width, height = 320, 240
+#screen = pygame.display.set_mode((320,240)) #set screen size to PiTFT resolution
+#my_font = pygame.font.Font(None, 20)
+#screen.fill(black) # Erase the Work space
+#start_surface = my_font.render("Initializing...", True, white) #splash screen
+#rect_start = start_surface.get_rect(center=(160,120))
+#screen.blit(start_surface, rect_start)
+#pygame.display.flip()  #Display the initial screen
 
 #configure the states
 STATE_START=1
 STATE_SEARCH=2
-STATE_CHECK=3
+#STATE_CHECK=3
 STATE_MOV_FWD=4
 STATE_ROT_CCW=5
 STATE_MOV_BACK=6
@@ -62,7 +62,7 @@ STATE_PARK=10
 state_text = {
 STATE_START : "Press button to Park",
 STATE_SEARCH : "Search for Parking spot",
-STATE_CHECK : "Checking for Fire Hydrant",
+#STATE_CHECK : "Checking for Fire Hydrant",
 STATE_MOV_FWD : "Parking Spot Found",
 STATE_ROT_CCW : "Parking...",
 STATE_MOV_BACK : "Parking...",
@@ -83,6 +83,8 @@ MIN_REV_DIST = 10  # minimum distance from the car parked behind
 #Set the servo motor pins
 LEFT_MOTOR_PIN =13
 RIGHT_MOTOR_PIN =12
+# LEFT_MOTOR_PIN =19
+# RIGHT_MOTOR_PIN =26
 
 #initialise hardware PWM
 pi_hw = pigpio.pi()
@@ -97,18 +99,19 @@ def park(channel): #call back function to start parking
     global child_pid
     global once
     #global x_start
+    print("start parking process")
     if STATE==STATE_START:
         #call mouse.py to start reading x and y coordinates
         proc = subprocess.Popen(["python","mouse.py"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         child_pid = proc.pid#store pid to kill the process after park
         time.sleep(0.3)
         STATE=STATE_SEARCH
-        screen.fill(black) # Erase the Work space
+        #screen.fill(black) # Erase the Work space
         jurk() #slight jerk to start mouse reading
         once = 1
 
 
-#GPIO.add_event_detect(17,GPIO.FALLING, callback=park, bouncetime=300) #configure interrupt for handling park button
+GPIO.add_event_detect(25,GPIO.FALLING, callback=park, bouncetime=300) #configure interrupt for handling park button
 
 
 ################################################Init done###########################################
@@ -142,8 +145,8 @@ print("Initialized FIFO Read functions")
 primary_t_on = 1.5/1000
 primary_t_off = 20.0/1000
 primary_period = primary_t_on + primary_t_off
-primary_freq = 1/primary_period
-primary_duty = 1000000*(primary_t_on/primary_period)
+primary_freq = int(1/primary_period)
+primary_duty = int(1000000*(primary_t_on/primary_period))
 pi_hw.hardware_PWM(LEFT_MOTOR_PIN,primary_freq,primary_duty)
 
 
@@ -151,8 +154,8 @@ pi_hw.hardware_PWM(LEFT_MOTOR_PIN,primary_freq,primary_duty)
 secondary_t_on = 1.5/1000
 secondary_t_off = 20.0/1000
 secondary_period = secondary_t_on + secondary_t_off
-secondary_freq = 1/secondary_period
-secondary_duty = 1000000*(secondary_t_on/secondary_period)
+secondary_freq = int(1/secondary_period)
+secondary_duty = int(1000000*(secondary_t_on/secondary_period))
 pi_hw.hardware_PWM(RIGHT_MOTOR_PIN,secondary_freq,secondary_duty)
 
 print("Initialized Motors")
@@ -281,16 +284,27 @@ print("Initialized Robot control Functions")
 print("starting")
 stop()
 # Define pins for ultrasound sensors
-TRIGGER_PIN_1 = 5
-ECHO_PIN_1 = 6
-TRIGGER_PIN_2 = 20
-ECHO_PIN_2 = 21
-TRIGGER_PIN_3 = 23
-ECHO_PIN_3 = 19#24
+#TRIGGER_PIN_1 = 5
+#ECHO_PIN_1 = 6
+#TRIGGER_PIN_2 = 20
+#ECHO_PIN_2 = 21
+#TRIGGER_PIN_3 = 23
+#ECHO_PIN_3 = 19#24
+#TRIGGER_PIN_4 = 26
+#ECHO_PIN_4 = 16#25
+#TRIGGER_PIN_5 = 22
+#ECHO_PIN_5 = 27
+
+TRIGGER_PIN_1 = 17
+ECHO_PIN_1 = 27
+TRIGGER_PIN_2 = 23
+ECHO_PIN_2 = 24
+TRIGGER_PIN_3 = 5
+ECHO_PIN_3 = 6
 TRIGGER_PIN_4 = 26
-ECHO_PIN_4 = 16#25
-TRIGGER_PIN_5 = 22
-ECHO_PIN_5 = 27
+ECHO_PIN_4 = 16
+TRIGGER_PIN_5 = 20
+ECHO_PIN_5 = 21
 
 
 # Initialise five sensors.
@@ -310,12 +324,12 @@ stop()
 #print distance
 time_start = time.time()
 print("Starting Main code")
-screen.fill(black) # Erase the Work space
+#screen.fill(black) # Erase the Work space
 #display Park message
-start_surface = my_font.render("Press button to Park", True, white)
-rect_start = start_surface.get_rect(center=(160,120))
-screen.blit(start_surface, rect_start)
-pygame.display.flip()
+#start_surface = my_font.render("Press button to Park", True, white)
+#rect_start = start_surface.get_rect(center=(160,120))
+#screen.blit(start_surface, rect_start)
+#pygame.display.flip()
 
 play = True
 ################################################Main Code###########################################
@@ -346,7 +360,8 @@ try:
                     distance[sensor] = round(echo[sensor].read('cm', 3),2)
                     print(distance)
                 if(distance[1]>MIN_SPACE and distance[2]>MIN_SPACE and distance[3]>MIN_SPACE):     #goto next state if spot is suitable
-                    STATE=STATE_CHECK
+#                    STATE=STATE_CHECK
+                    STATE=STATE_MOV_FWD
                 else: 
                     time.sleep(0.02);
                     jurk()
@@ -354,24 +369,24 @@ try:
                     #secondary_motor_signals(0.01)
                     #x_start=getX()
       
-#         elif(STATE==STATE_CHECK):  #------------------STATE 3-------------------#
-#             #CHECK FOR FIRE HYDRANT
-#             #time.sleep(5)
-#             fire_hydrant=Fire_Hyd.Check_hydrant()
-#             print("hydrant detected: " + str(fire_hydrant))
-#             jurk()
-#             #primary_motor_signals(0.01)
-#             #secondary_motor_signals(0.01)
-#             y_start=getY()
-#             if(fire_hydrant==0): #goto next state if there is no fire hydrant
-#                 STATE=STATE_MOV_FWD
-#             else:
-#                 STATE=STATE_SEARCH #resume search state if fire hydrant is detected
-#                 while((getY()-y_start < 3000)):# or (round(echo[3].read('cm', 2),2)>MIN_REV_DIST)): 
-#                     mov_fwd() #move forward for fixed distance till fire hydrant is out of frame
-#             y_start=getY()
-#             #x_start=getX()
-#             fire_hydrant = 0
+#        elif(STATE==STATE_CHECK):  #------------------STATE 3-------------------#
+#            #CHECK FOR FIRE HYDRANT
+#            #time.sleep(5)
+#            fire_hydrant=Fire_Hyd.Check_hydrant()
+#            print("hydrant detected: " + str(fire_hydrant))
+#            jurk()
+#            #primary_motor_signals(0.01)
+#            #secondary_motor_signals(0.01)
+#            y_start=getY()
+#            if(fire_hydrant==0): #goto next state if there is no fire hydrant
+#                STATE=STATE_MOV_FWD
+#            else:
+#                STATE=STATE_SEARCH #resume search state if fire hydrant is detected
+#                while((getY()-y_start < 3000)):# or (round(echo[3].read('cm', 2),2)>MIN_REV_DIST)):
+#                    mov_fwd() #move forward for fixed distance till fire hydrant is out of frame
+#            y_start=getY()
+#            #x_start=getX()
+#            fire_hydrant = 0
             
             
         elif(STATE==STATE_MOV_FWD):  #------------------STATE 4-------------------#
@@ -425,11 +440,11 @@ try:
             if(time.time() - t_start > 5):
                 STATE=STATE_START
         if(not(STATE==PREV_STATE)): #display state messages on PiTFT
-            screen.fill(black) # Erase the Work space
-            state_surface = my_font.render(state_text[STATE], True, white)
-            rect_state = state_surface.get_rect(center=(160,120))
-            screen.blit(state_surface, rect_state)
-            pygame.display.flip()
+#            screen.fill(black) # Erase the Work space
+#            state_surface = my_font.render(state_text[STATE], True, white)
+#            rect_state = state_surface.get_rect(center=(160,120))
+#            screen.blit(state_surface, rect_state)
+#            pygame.display.flip()
             PREV_STATE = STATE
 
         while((time.time()-start_time) <0.02):

@@ -2,13 +2,13 @@ import os
 import sys
 import re
 
-path = "mouse_FIFO"
+path = "../mouse_FIFO"
 
 while True:
     fifo = open(path, "r")
     ag = fifo.read()
-    print ag
+    print(ag)
     num = ag.split(" ")
     b = [int(a) for a in num]
-    #print b
+    print(b)
     fifo.close()

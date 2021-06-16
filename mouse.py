@@ -6,9 +6,9 @@ import struct, math, os, errno
 file = open( "/dev/input/mice", "rb" );
 output = "mouse_FIFO";
  
-point_x = 0;
-point_y = 0;
-scaling = 1; #determine the scaling based on trial and calibration
+point_x = 0.0;
+point_y = 0.0;
+scaling = 1.0; #determine the scaling based on trial and calibration
  
 class Point:
     x = 0.0
@@ -29,7 +29,8 @@ while( 1 ):
      
     try:
         pipe = os.open(output, os.O_WRONLY | os.O_NONBLOCK); #write to FIFO
-        os.write(pipe, "%d %d" % (point_x,point_y));
+        #os.write(pipe, "%d %d" % (bytes(str(point_x),'UTF-8'),bytes(str(point_y),'UTF-8')))
+        os.write(pipe, "{0} {1}".format(point_x,point_y).encode('utf-8'))
         print(str(point_x) + " " + str(point_y))
         os.close(pipe);
     except OSError as err:

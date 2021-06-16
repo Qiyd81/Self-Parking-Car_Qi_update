@@ -5,12 +5,12 @@ import sys
 import numpy as np
 import cv2
 from datetime import datetime
-np.set_printoptions(threshold=np.nan)
+np.set_printoptions(threshold=sys.maxsize)
 
 #Main: Step 1. Set Video Resolution Parameters
 #Note: There will be less info to process if resolution decreases
-x_res = 640 #320 
-y_res = 480 #240 
+x_res = 320 #640 #320 
+y_res = 240 #480 #240 
 center_x = x_res/2
 center_y = y_res/2
 #Main: Step 2. Create a VideoCapture object to capture video

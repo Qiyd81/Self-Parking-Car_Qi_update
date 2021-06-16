@@ -4,16 +4,16 @@ from math import floor
 from Bluetin_Echo import Echo
 
 # Define pin constants
-TRIGGER_PIN_1 = 5
-ECHO_PIN_1 = 6
-TRIGGER_PIN_2 = 20
-ECHO_PIN_2 = 21
-TRIGGER_PIN_3 = 23
-ECHO_PIN_3 = 17#24
+TRIGGER_PIN_1 = 17
+ECHO_PIN_1 = 27
+TRIGGER_PIN_2 = 23
+ECHO_PIN_2 = 24
+TRIGGER_PIN_3 = 5
+ECHO_PIN_3 = 6
 TRIGGER_PIN_4 = 26
-ECHO_PIN_4 = 12#25
-TRIGGER_PIN_5 = 22
-ECHO_PIN_5 = 27
+ECHO_PIN_4 = 16
+TRIGGER_PIN_5 = 20
+ECHO_PIN_5 = 21
 
 # Initialise two sensors.
 echo = [Echo(TRIGGER_PIN_1, ECHO_PIN_1)
