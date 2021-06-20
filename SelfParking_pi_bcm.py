@@ -26,6 +26,8 @@ from Bluetin_Echo import Echo
 #import Fire_Hyd
 import subprocess
 import signal
+import configuration
+import helpers.motor_driver as motor_driver_helper
 
 #os.putenv('SDL_VIDEODRIVER', 'fbcon') # Display on piTFT
 #os.putenv('SDL_FBDEV', '/dev/fb1')
@@ -76,7 +78,7 @@ STATE=STATE_START
 PREV_STATE=STATE_PARK
 x_start = 0
 
-MIN_SPACE = 15 # minimum space required to park the car
+MIN_SPACE = 35 # minimum space required to park the car
 MIN_DIST = 5   # minimum distance from the car parked in front
 MIN_REV_DIST = 10  # minimum distance from the car parked behind
 
@@ -90,6 +92,11 @@ RIGHT_MOTOR_PIN =12
 pi_hw = pigpio.pi()
 pi_hw.set_mode(LEFT_MOTOR_PIN, pigpio.OUTPUT)
 pi_hw.set_mode(RIGHT_MOTOR_PIN, pigpio.OUTPUT)
+#pwm = motor_driver_helper.get_pwm_imstance()
+#motor_driver_helper.start_pwm(pwm)
+motor_driver_helper.set_gpio_pins()
+#go_forward = motor_driver_helper.set_forward_mode()
+
 child_pid = 0
 once = 0
 
@@ -111,9 +118,9 @@ def park(channel): #call back function to start parking
         once = 1
 
 
-GPIO.add_event_detect(25,GPIO.FALLING, callback=park, bouncetime=300) #configure interrupt for handling park button
-
-
+#GPIO.add_event_detect(25,GPIO.FALLING, callback=park, bouncetime=300) #configure interrupt for handling park button
+GPIO.add_event_detect(25,GPIO.RISING, callback=park, bouncetime=300)
+#GPIO.add_event_detect(25,GPIO.RISING, callback=go_forward, bouncetime=300)
 ################################################Init done###########################################
 print("Initialized libraries")
 
@@ -224,6 +231,7 @@ def mov_fwd():
     #set primary and secondary wheel speeds
     primary_motor_signals(prim_val)
     secondary_motor_signals(sec_val)
+    motor_driver_helper.set_forward_mode()
     #time.sleep(0.02)
 
 
@@ -234,6 +242,7 @@ def mov_bk():
     #set primary and secondary wheel speeds
     primary_motor_signals(prim_val)
     secondary_motor_signals(sec_val)
+    motor_driver_helper.set_reverse_mode()
     time.sleep(0.02)
 
 
@@ -249,6 +258,7 @@ def rlt():
       sec_val = 0.1 
       primary_motor_signals(prim_val)
       secondary_motor_signals(sec_val)
+      motor_driver_helper.set_right_mode()
       p_angle= getX()
       time.sleep(0.02)
     stop() #stop the motors
@@ -264,6 +274,7 @@ def rrt():
       sec_val = -0.1 
       primary_motor_signals(prim_val)
       secondary_motor_signals(sec_val)
+      motor_driver_helper.set_left_mode()
       p_angle= getX()
       time.sleep(0.02)
     stop() #stop the motors
@@ -272,6 +283,7 @@ def jurk():
     #small velocities to motor to get mouse readings
     primary_motor_signals(0.01)
     secondary_motor_signals(0.01)
+    motor_driver_helper.set_forward_mode()
 
 def stop():
     #stop the PWMs
